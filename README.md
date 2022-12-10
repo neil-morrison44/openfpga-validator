@@ -47,4 +47,4 @@ Doing
 npm run run check <path_to_zip>
 ```
 
-Will build the TS files & run it as if a user's done `npx npx openfpga-validator check <path_to_zip>`
+Will build the TS files & run it as if a user's done `npx openfpga-validator check <path_to_zip>`
