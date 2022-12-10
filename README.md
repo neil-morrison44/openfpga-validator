@@ -38,3 +38,13 @@ Or, if you want to do it yourself
 - add an `await` for it to the main `index.ts`
 - I'll be adding automated tests soon so you might need to add example `.zip` files that pass / fail (don't worry about this yet though)
 - Raise a PR, I'll merge, bump the version, and do a release
+
+## To run locally
+
+Doing
+
+```bash
+npm run run check <path_to_zip>
+```
+
+Will build the TS files & run it as if a user's done `npx npx openfpga-validator check <path_to_zip>`
