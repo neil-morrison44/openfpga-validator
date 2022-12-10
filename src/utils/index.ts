@@ -32,3 +32,7 @@ export const findMatchingFiles = async (zip: StreamZipAsync, regex: RegExp) => {
     .filter(({ name, isDirectory }) => regex.test(name) && !isDirectory)
     .map(({ name }) => name)
 }
+
+export const checkForRequiredType = (json: any, key: string, type: string) => {
+  return typeof json[key] === type
+}

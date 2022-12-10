@@ -1,7 +1,7 @@
 {
   "name": "openfpga-validator",
   "private": false,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Script which validates OpenFPGA core zips",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
