@@ -30,11 +30,30 @@ export const checkCoreJSONParamTypes: CheckFn = async (zip, reporter) => {
   const coreFiles = await coresList(zip)
 
   for (const coreFile of coreFiles) {
-    const json = await getJSONFromZip(zip, coreFile)
+    let json = await getJSONFromZip(zip, coreFile)
 
-    if (!(json.platform_ids && Array.isArray(json.platform_ids))) {
+    if (!json.core) {
       reporter.error(
-        `Missing / incorrect \`platform_ids\` in ${coreFile}`,
+        `Missing / incorrect \`core\` nesting in ${coreFile}`,
+        "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#metadata"
+      )
+    }
+
+    if (json.core.magic !== "APF_VER_1") {
+      reporter.error(
+        `Missing / incorrect \`core.magic\` in ${coreFile}`,
+        "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#json-definition"
+      )
+    }
+
+    if (
+      !(
+        json.core.metadata.platform_ids &&
+        Array.isArray(json.core.metadata.platform_ids)
+      )
+    ) {
+      reporter.error(
+        `Missing / incorrect \`metadata.platform_ids\` in ${coreFile}`,
         "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#metadata"
       )
     }
@@ -49,7 +68,7 @@ export const checkCoreJSONParamTypes: CheckFn = async (zip, reporter) => {
     ]
 
     expectedToBeStrings.forEach((key) => {
-      if (!checkForRequiredType(json, key, "string")) {
+      if (!checkForRequiredType(json.core.metadata, key, "string")) {
         reporter.error(
           `Missing / incorrect \`${key}\` in ${coreFile}`,
           "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#metadata"
@@ -59,14 +78,16 @@ export const checkCoreJSONParamTypes: CheckFn = async (zip, reporter) => {
 
     // framework
 
-    if (json.framework.target_product !== "Analogue Pocket") {
+    if (json.core.framework.target_product !== "Analogue Pocket") {
       reporter.error(
         `framework.target_product must be set to "Analogue Pocket" in ${coreFile}`,
         "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#framework"
       )
     }
 
-    if (!checkForRequiredType(json.framework, "version_required", "string")) {
+    if (
+      !checkForRequiredType(json.core.framework, "version_required", "string")
+    ) {
       // this could probably be expanded to check for known versions
       reporter.error(
         `missing / incorrect framework.version_required in ${coreFile}`,
@@ -74,7 +95,9 @@ export const checkCoreJSONParamTypes: CheckFn = async (zip, reporter) => {
       )
     }
 
-    if (!checkForRequiredType(json.framework, "sleep_supported", "boolean")) {
+    if (
+      !checkForRequiredType(json.core.framework, "sleep_supported", "boolean")
+    ) {
       // this could probably be expanded to check for known versions
       reporter.error(
         `missing / incorrect framework.sleep_supported in ${coreFile}`,
@@ -83,8 +106,8 @@ export const checkCoreJSONParamTypes: CheckFn = async (zip, reporter) => {
     }
 
     if (
-      json.framework.chip32_vm &&
-      !checkForRequiredType(json.framework, "chip32_vm", "string")
+      json.core.framework.chip32_vm &&
+      !checkForRequiredType(json.core.framework, "chip32_vm", "string")
     ) {
       // optional, but must be a string if specified
       // will add another check to see that the file specified exists
@@ -96,14 +119,22 @@ export const checkCoreJSONParamTypes: CheckFn = async (zip, reporter) => {
 
     // dock
 
-    if (!checkForRequiredType(json.dock, "supported", "boolean")) {
+    if (
+      !checkForRequiredType(json.core.framework.dock, "supported", "boolean")
+    ) {
       reporter.error(
         `missing / incorrect dock.supported in ${coreFile}`,
         "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#dock"
       )
     }
 
-    if (!checkForRequiredType(json.dock, "analog_output", "boolean")) {
+    if (
+      !checkForRequiredType(
+        json.core.framework.dock,
+        "analog_output",
+        "boolean"
+      )
+    ) {
       reporter.error(
         `missing / incorrect dock.analog_output in ${coreFile}`,
         "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#dock"
@@ -112,14 +143,20 @@ export const checkCoreJSONParamTypes: CheckFn = async (zip, reporter) => {
 
     // hardware
 
-    if (!checkForRequiredType(json.hardware, "link_port", "boolean")) {
+    if (
+      !checkForRequiredType(
+        json.core.framework.hardware,
+        "link_port",
+        "boolean"
+      )
+    ) {
       reporter.error(
         `missing / incorrect hardware.link_port in ${coreFile}`,
         "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#hardware"
       )
     }
 
-    if (![0, -1].includes(json.hardware.cartridge_adapter)) {
+    if (![0, -1].includes(json.core.framework.hardware.cartridge_adapter)) {
       reporter.error(
         `missing / incorrect hardware.cartridge_adapter in ${coreFile}`,
         "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#hardware"
@@ -128,14 +165,14 @@ export const checkCoreJSONParamTypes: CheckFn = async (zip, reporter) => {
 
     // cores
 
-    if (!Array.isArray(json.cores) || json.cores.length === 0) {
+    if (!Array.isArray(json.core.cores) || json.core.cores.length === 0) {
       reporter.error(
-        `missing / incorrect / empty cores in ${coreFile}`,
+        `missing / incorrect / empty / too many cores in ${coreFile}`,
         "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#cores"
       )
     }
 
-    json.cores.forEach((core: any, index: number) => {
+    json.core.cores.forEach((core: any, index: number) => {
       if (!checkForRequiredType(core, "name", "string")) {
         reporter.error(
           `core ${index} missing / incorrect name value in ${coreFile}`,
@@ -162,6 +199,80 @@ export const checkCoreJSONParamTypes: CheckFn = async (zip, reporter) => {
         )
       }
     })
+  }
+}
+
+export const checkLengthOfThings: CheckFn = async (zip, reporter) => {
+  const coreFiles = await coresList(zip)
+
+  for (const coreFile of coreFiles) {
+    const json = await getJSONFromZip<CoreJSON>(zip, coreFile)
+
+    const paramLengths = [
+      ["shortname", 31],
+      ["description", 63],
+      ["author", 31],
+      ["url", 63],
+      ["version", 31],
+      ["date_release", 10],
+    ] as const
+
+    paramLengths.forEach(([key, length]) => {
+      if (json.core.metadata[key].length > length) {
+        reporter.error(
+          `param ${key} too long (${json.core.metadata[key].length} > ${length}) in ${coreFile}`,
+          "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#cores"
+        )
+      }
+    })
+  }
+}
+
+export const checkAllMentionedFilesExist: CheckFn = async (zip, reporter) => {
+  const coreFiles = await coresList(zip)
+
+  for (const coreFile of coreFiles) {
+    const json = await getJSONFromZip<CoreJSON>(zip, coreFile)
+
+    if (json.core.framework.chip32_vm) {
+      const chip32vmPath = coreFile.replace(
+        "core.json",
+        json.core.framework.chip32_vm
+      )
+
+      if (!fileExistsInZip(zip, chip32vmPath)) {
+        reporter.error(
+          `missing ${chip32vmPath} file`,
+          "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#framework"
+        )
+      }
+    }
+
+    json.core.cores.forEach(({ filename }) => {
+      const coreFileName = coreFile.replace("core.json", filename)
+
+      if (!fileExistsInZip(zip, coreFileName)) {
+        reporter.error(
+          `missing ${coreFileName} file`,
+          "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#cores"
+        )
+      }
+    })
+  }
+}
+
+export const checkForSemver: CheckFn = async (zip, reporter) => {
+  const coreFiles = await coresList(zip)
+  const semverRegex = /[0-9]*\.[0-9]*\.[0-9]*/
+
+  for (const coreFile of coreFiles) {
+    const json = await getJSONFromZip<CoreJSON>(zip, coreFile)
+    if (!semverRegex.test(json.core.metadata.version)) {
+      reporter.recommend(
+        `SemVer versioning is highly encouraged - \`${json.core.metadata.version}\` in ${coreFile}`,
+        "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#metadata"
+      )
+    }
   }
 }
 
