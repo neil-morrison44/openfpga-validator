@@ -32,7 +32,7 @@ export const runCLI = () => {
       "Fail on errors, warnings, & recommendations"
     )
     .action(async (zipPath, options) => {
-      const exitCode = await processZip(zipPath, options)
+      const exitCode = await processZip(zipPath, options, true)
       process.exit(exitCode)
     })
 
@@ -41,9 +41,10 @@ export const runCLI = () => {
 
 export const processZip = async (
   zipPath: string,
-  options: { failOnWarnings: boolean; failOnRecommendations: boolean }
+  options: { failOnWarnings: boolean; failOnRecommendations: boolean },
+  chalk = false
 ) => {
-  const reporter = new Reporter()
+  const reporter = new Reporter({ chalk })
 
   const zip = new StreamZip.async({ file: zipPath })
 
