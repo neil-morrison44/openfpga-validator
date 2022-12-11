@@ -21,8 +21,8 @@ export const fileExistsInZip = async (
 
 export const dirExistsInZip = async (zip: StreamZipAsync, dirPath: string) => {
   const entries = await zip.entries()
-  return Object.values(entries).some(
-    ({ name, isDirectory }) => name === `${dirPath}/` && isDirectory
+  return Object.values(entries).some(({ name }) =>
+    name.startsWith(`${dirPath}/`)
   )
 }
 

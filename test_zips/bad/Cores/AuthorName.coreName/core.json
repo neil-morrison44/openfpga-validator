@@ -1,0 +1,45 @@
+{
+  "core": {
+    "magic": "APF_VER_100",
+    "metadata": {
+      "platform_ids": [
+        "nonsense_1",
+        "nonsense_2",
+        "nonsense_3",
+        "nonsense_4",
+        "nonsense_5",
+        "nonsense_6",
+        "nonsense_7",
+        "nonsense_8",
+        "nonsense_9"
+      ],
+      "shortname": "very very very very very long short name",
+      "description": "This description is far far far far far far far far far far far far far far far far too long",
+      "author": "SomeoneElse",
+      "url": "https://example.com/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "not-semver-and-also-far-far-too-long",
+      "date_release": "2022-12-10-10-10-10"
+    },
+    "framework": {
+      "target_product": "Analogue Snocket",
+      "version_required": "1.1",
+      "sleep_supported": false,
+      "dock": {
+        "supported": true,
+        "analog_output": false
+      },
+      "hardware": {
+        "link_port": false,
+        "cartridge_adapter": -3
+      },
+      "chip32_vm": "loader_too_long_a_file_name_too_long.bin"
+    },
+    "cores": [
+      {
+        "name": "main_too_long_a_name_too_long",
+        "id": 0,
+        "filename": "snes_main_too_long_a_file_name_too_long.rev"
+      }
+    ]
+  }
+}

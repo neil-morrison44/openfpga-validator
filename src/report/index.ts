@@ -5,24 +5,40 @@ export class Reporter {
   warningCount: number
   recommendationCount: number
 
-  constructor() {
+  chalk: boolean
+
+  constructor(options?: { chalk?: boolean }) {
     this.errorCount = 0
     this.warningCount = 0
     this.recommendationCount = 0
+
+    if (options?.chalk === false) {
+      this.chalk = false
+    } else {
+      this.chalk = true
+    }
   }
 
   error(...args: any[]) {
     this.errorCount++
-    console.log(chalk.red(`Error:`, ...args))
+    if (this.chalk) {
+      console.log(chalk.red(`Error:`, ...args))
+    } else {
+      console.log(`Error:`, ...args)
+    }
   }
 
   warn(...args: any[]) {
     this.warningCount++
-    console.log(chalk.yellow(`Warning:`, ...args))
+    if (this.chalk) {
+      console.log(chalk.yellow(`Warning:`, ...args))
+    } else {
+      console.log(`Warning:`, ...args)
+    }
   }
 
   recommend(...args: any[]) {
     this.recommendationCount++
-    console.log(chalk.green(`Recommendation:`, ...args))
+    console.log(`Recommendation:`, ...args)
   }
 }

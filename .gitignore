@@ -1,4 +1,6 @@
 lib
+.DS_store
+test_zips/*.zip
 
 # Logs
 logs

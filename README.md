@@ -36,7 +36,8 @@ Or, if you want to do it yourself
   - If it's just nice to have - or it's a convention followed by other cores - then it's a `Recommendation`
 - If you can specify the part of the Analogue Docs which talk about the issue then include the URL in the message
 - add an `await` for it to the main `index.ts`
-- I'll be adding automated tests soon so you might need to add example `.zip` files that pass / fail (don't worry about this yet though)
+- Add a "good" example to the `good` folder in `test_zips` and a "bad" example in the `bad` one
+- run `npm test -- -u` to update the snapshots within the tests & check they look as expected
 - Raise a PR, I'll merge, bump the version, and do a release
 
 ## To run locally
