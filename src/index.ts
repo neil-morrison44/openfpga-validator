@@ -7,9 +7,8 @@ import {
   checkAllMentionedFilesExist,
   checkAllSpecifiedPlatformsExist,
   checkCoreFolderName,
-  checkCoreJSONParamTypes,
   checkForSemver,
-  checkLengthOfThings,
+  checkCoreJSONSchema,
 } from "./checks/core_json"
 
 export const runCLI = () => {
@@ -51,9 +50,8 @@ export const processZip = async (
   await checkForInvalidJSON(zip, reporter)
   await checkForRootFiles(zip, reporter)
   await checkCoreFolderName(zip, reporter)
-  await checkCoreJSONParamTypes(zip, reporter)
   await checkAllMentionedFilesExist(zip, reporter)
-  await checkLengthOfThings(zip, reporter)
+  await checkCoreJSONSchema(zip, reporter)
   await checkForSemver(zip, reporter)
   await checkAllSpecifiedPlatformsExist(zip, reporter)
 

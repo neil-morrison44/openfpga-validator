@@ -1,12 +1,7 @@
 import { StreamZipAsync } from "node-stream-zip"
+import { coreJsonSchema } from "../schemas/core_json"
 import { CheckFn, CoreJSON } from "../types"
-import {
-  checkForRequiredType,
-  dirExistsInZip,
-  fileExistsInZip,
-  findMatchingFiles,
-  getJSONFromZip,
-} from "../utils"
+import { fileExistsInZip, findMatchingFiles, getJSONFromZip } from "../utils"
 
 export const checkCoreFolderName: CheckFn = async (zip, reporter) => {
   const coreFiles = await coresList(zip)
@@ -26,205 +21,21 @@ export const checkCoreFolderName: CheckFn = async (zip, reporter) => {
   }
 }
 
-export const checkCoreJSONParamTypes: CheckFn = async (zip, reporter) => {
-  const coreFiles = await coresList(zip)
-
-  for (const coreFile of coreFiles) {
-    let json = await getJSONFromZip(zip, coreFile)
-
-    if (!json.core) {
-      reporter.error(
-        `Missing / incorrect \`core\` nesting in ${coreFile}`,
-        "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#metadata"
-      )
-    }
-
-    if (json.core.magic !== "APF_VER_1") {
-      reporter.error(
-        `Missing / incorrect \`core.magic\` in ${coreFile}`,
-        "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#json-definition"
-      )
-    }
-
-    if (
-      !(
-        json.core.metadata.platform_ids &&
-        Array.isArray(json.core.metadata.platform_ids)
-      )
-    ) {
-      reporter.error(
-        `Missing / incorrect \`metadata.platform_ids\` in ${coreFile}`,
-        "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#metadata"
-      )
-    }
-
-    const expectedToBeStrings = [
-      "shortname",
-      "description",
-      "author",
-      "url",
-      "version",
-      "date_release",
-    ]
-
-    expectedToBeStrings.forEach((key) => {
-      if (!checkForRequiredType(json.core.metadata, key, "string")) {
-        reporter.error(
-          `Missing / incorrect \`${key}\` in ${coreFile}`,
-          "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#metadata"
-        )
-      }
-    })
-
-    // framework
-
-    if (json.core.framework.target_product !== "Analogue Pocket") {
-      reporter.error(
-        `framework.target_product must be set to "Analogue Pocket" in ${coreFile}`,
-        "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#framework"
-      )
-    }
-
-    if (
-      !checkForRequiredType(json.core.framework, "version_required", "string")
-    ) {
-      // this could probably be expanded to check for known versions
-      reporter.error(
-        `missing / incorrect framework.version_required in ${coreFile}`,
-        "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#framework"
-      )
-    }
-
-    if (
-      !checkForRequiredType(json.core.framework, "sleep_supported", "boolean")
-    ) {
-      // this could probably be expanded to check for known versions
-      reporter.error(
-        `missing / incorrect framework.sleep_supported in ${coreFile}`,
-        "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#framework"
-      )
-    }
-
-    if (
-      json.core.framework.chip32_vm &&
-      !checkForRequiredType(json.core.framework, "chip32_vm", "string")
-    ) {
-      // optional, but must be a string if specified
-      // will add another check to see that the file specified exists
-      reporter.error(
-        `Incorrect framework.chip32_vm in ${coreFile}`,
-        "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#framework"
-      )
-    }
-
-    // dock
-
-    if (
-      !checkForRequiredType(json.core.framework.dock, "supported", "boolean")
-    ) {
-      reporter.error(
-        `missing / incorrect dock.supported in ${coreFile}`,
-        "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#dock"
-      )
-    }
-
-    if (
-      !checkForRequiredType(
-        json.core.framework.dock,
-        "analog_output",
-        "boolean"
-      )
-    ) {
-      reporter.error(
-        `missing / incorrect dock.analog_output in ${coreFile}`,
-        "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#dock"
-      )
-    }
-
-    // hardware
-
-    if (
-      !checkForRequiredType(
-        json.core.framework.hardware,
-        "link_port",
-        "boolean"
-      )
-    ) {
-      reporter.error(
-        `missing / incorrect hardware.link_port in ${coreFile}`,
-        "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#hardware"
-      )
-    }
-
-    if (![0, -1].includes(json.core.framework.hardware.cartridge_adapter)) {
-      reporter.error(
-        `missing / incorrect hardware.cartridge_adapter in ${coreFile}`,
-        "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#hardware"
-      )
-    }
-
-    // cores
-
-    if (!Array.isArray(json.core.cores) || json.core.cores.length === 0) {
-      reporter.error(
-        `missing / incorrect / empty / too many cores in ${coreFile}`,
-        "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#cores"
-      )
-    }
-
-    json.core.cores.forEach((core: any, index: number) => {
-      if (!checkForRequiredType(core, "name", "string")) {
-        reporter.error(
-          `core ${index} missing / incorrect name value in ${coreFile}`,
-          "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#cores"
-        )
-      }
-
-      if (
-        !(
-          checkForRequiredType(core, "id", "string") ||
-          checkForRequiredType(core, "id", "number")
-        )
-      ) {
-        reporter.error(
-          `core ${index} missing / incorrect id value in ${coreFile}`,
-          "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#cores"
-        )
-      }
-
-      if (!checkForRequiredType(core, "filename", "string")) {
-        reporter.error(
-          `core ${index} missing / incorrect filename value in ${coreFile}`,
-          "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#cores"
-        )
-      }
-    })
-  }
-}
-
-export const checkLengthOfThings: CheckFn = async (zip, reporter) => {
+export const checkCoreJSONSchema: CheckFn = async (zip, reporter) => {
   const coreFiles = await coresList(zip)
 
   for (const coreFile of coreFiles) {
     const json = await getJSONFromZip<CoreJSON>(zip, coreFile)
-
-    const paramLengths = [
-      ["shortname", 31],
-      ["description", 63],
-      ["author", 31],
-      ["url", 63],
-      ["version", 31],
-      ["date_release", 10],
-    ] as const
-
-    paramLengths.forEach(([key, length]) => {
-      if (json.core.metadata[key].length > length) {
-        reporter.error(
-          `param ${key} too long (${json.core.metadata[key].length} > ${length}) in ${coreFile}`,
-          "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#cores"
-        )
-      }
-    })
+    const result = coreJsonSchema.safeParse(json)
+    if (!result.success) {
+      reporter.error(
+        `${coreFile} invalid:`,
+        "\n\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json\n"
+      )
+      result.error.issues.forEach((issue) => {
+        reporter.error(`${issue.path.join(".")}`, issue.message)
+      })
+    }
   }
 }
 
