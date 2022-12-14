@@ -47,15 +47,17 @@ export const processZip = async (
 
   const zip = new StreamZip.async({ file: zipPath })
 
-  await checkForInvalidJSON(zip, reporter)
-  await checkForRootFiles(zip, reporter)
-  await checkCoreFolderName(zip, reporter)
-  await checkAllMentionedFilesExist(zip, reporter)
-  await checkCoreJSONSchema(zip, reporter)
-  await checkForSemver(zip, reporter)
-  await checkAllSpecifiedPlatformsExist(zip, reporter)
+  await Promise.all([
+    checkForInvalidJSON(zip, reporter),
+    checkForRootFiles(zip, reporter),
+    checkCoreFolderName(zip, reporter),
+    checkAllMentionedFilesExist(zip, reporter),
+    checkCoreJSONSchema(zip, reporter),
+    checkForSemver(zip, reporter),
+    checkAllSpecifiedPlatformsExist(zip, reporter)
+  ])
 
-  zip.close()
+  await zip.close()
 
   let exitCode = reporter.errorCount
   if (options.failOnWarnings || options.failOnRecommendations)
