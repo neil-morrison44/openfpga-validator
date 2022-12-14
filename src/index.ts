@@ -47,7 +47,7 @@ export const processZip = async (
 
   const zip = new StreamZip.async({ file: zipPath })
 
-  await Promise.all([
+  await Promise.allSettled([
     checkForInvalidJSON(zip, reporter),
     checkForRootFiles(zip, reporter),
     checkCoreFolderName(zip, reporter),
