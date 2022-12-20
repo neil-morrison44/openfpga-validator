@@ -11,5 +11,5 @@ test("good.zip", async () => {
     failOnRecommendations: false,
   })
 
-  expect(outputData).toMatchInlineSnapshot(`"Exit code 0"`)
+  expect(outputData).toMatchInlineSnapshot(`"Error:, No Cores found in zip!Exit code 1"`)
 })

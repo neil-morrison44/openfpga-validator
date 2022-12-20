@@ -9,7 +9,9 @@ import {
   checkCoreFolderName,
   checkForSemver,
   checkCoreJSONSchema,
+  countCoresInZip,
 } from "./checks/core_json"
+import { checkInputsAgainstSchema } from "./checks/input_json"
 
 export const runCLI = () => {
   const program = new Command()
@@ -47,13 +49,23 @@ export const processZip = async (
 
   const zip = new StreamZip.async({ file: zipPath })
 
+  // general
+
   await checkForInvalidJSON(zip, reporter)
   await checkForRootFiles(zip, reporter)
+
+  // core
+
   await checkCoreFolderName(zip, reporter)
   await checkAllMentionedFilesExist(zip, reporter)
   await checkCoreJSONSchema(zip, reporter)
+  await countCoresInZip(zip, reporter)
   await checkForSemver(zip, reporter)
   await checkAllSpecifiedPlatformsExist(zip, reporter)
+
+  // input
+
+  await checkInputsAgainstSchema(zip, reporter)
 
   zip.close()
 
