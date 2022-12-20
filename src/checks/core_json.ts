@@ -1,4 +1,5 @@
 import { StreamZipAsync } from "node-stream-zip"
+import { Reporter } from "../report"
 import { coreJsonSchema } from "../schemas/core_json"
 import { CheckFn, CoreJSON } from "../types"
 import { fileExistsInZip, findMatchingFiles, getJSONFromZip } from "../utils"
@@ -8,7 +9,10 @@ export const checkCoreFolderName: CheckFn = async (zip, reporter) => {
 
   for (const coreFile of coreFiles) {
     const json = await getJSONFromZip<CoreJSON>(zip, coreFile)
-    const name = `${json?.core?.metadata?.author}.${json?.core?.metadata?.shortname}`
+    const { success } = await coreJsonSchema.safeParseAsync(json)
+    if (!success) return
+
+    const name = `${json.core.metadata.author}.${json.core.metadata.shortname}`
     if (!coreFile.startsWith(`Cores/${name}`)) {
       reporter.error(
         `Core folder ${coreFile.replace(
@@ -26,7 +30,7 @@ export const checkCoreJSONSchema: CheckFn = async (zip, reporter) => {
 
   for (const coreFile of coreFiles) {
     const json = await getJSONFromZip<CoreJSON>(zip, coreFile)
-    const result = coreJsonSchema.safeParse(json)
+    const result = await coreJsonSchema.safeParseAsync(json)
     if (!result.success) {
       reporter.error(
         `${coreFile} invalid:`,
@@ -44,8 +48,9 @@ export const checkAllMentionedFilesExist: CheckFn = async (zip, reporter) => {
 
   for (const coreFile of coreFiles) {
     const json = await getJSONFromZip<CoreJSON>(zip, coreFile)
-
-    if (json.core?.framework?.chip32_vm) {
+    const { success } = await coreJsonSchema.safeParseAsync(json)
+    if (!success) return
+    if (json.core.framework.chip32_vm) {
       const chip32vmPath = coreFile.replace(
         "core.json",
         json.core.framework.chip32_vm
@@ -79,12 +84,29 @@ export const checkForSemver: CheckFn = async (zip, reporter) => {
 
   for (const coreFile of coreFiles) {
     const json = await getJSONFromZip<CoreJSON>(zip, coreFile)
-    if (!semverRegex.test(json.core?.metadata?.version)) {
+    const { success } = await coreJsonSchema.safeParseAsync(json)
+    if (!success) return
+
+    if (!semverRegex.test(json.core.metadata.version)) {
       reporter.recommend(
         `SemVer versioning is highly encouraged - \`${json.core?.metadata?.version}\` in ${coreFile}`,
         "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#metadata"
       )
     }
+  }
+}
+
+export const countCoresInZip: CheckFn = async (zip, reporter) => {
+  const coreFiles = await coresList(zip)
+
+  if (coreFiles.length === 0) {
+    reporter.error(`No Cores found in zip!`)
+  }
+
+  if (coreFiles.length > 1) {
+    reporter.recommend(
+      "it's easier for users to install what they want when each zip contains 1 core"
+    )
   }
 }
 
@@ -96,7 +118,10 @@ export const checkAllSpecifiedPlatformsExist: CheckFn = async (
 
   for (const coreFile of coreFiles) {
     const json = await getJSONFromZip<CoreJSON>(zip, coreFile)
-    const platformIds = json.core?.metadata?.platform_ids || []
+    const { success } = await coreJsonSchema.safeParseAsync(json)
+    if (!success) return
+
+    const platformIds = json.core.metadata.platform_ids
 
     for (const platformId of platformIds) {
       const platformPath = `Platforms/${platformId}.json`

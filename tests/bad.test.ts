@@ -32,9 +32,9 @@ Error: core.metadata.version String must contain at most 31 character(s)
 Error: core.metadata.date_release String must contain at most 10 character(s)
 Error: core.framework.target_product Invalid literal value, expected "Analogue Pocket"
 Error: core.framework.chip32_vm String must contain at most 15 character(s)
-Error: core.framework.hardware.cartridge_adapter Invalid input
 Error: core.cores.0.name String must contain at most 15 character(s)
 Error: core.cores.0.filename String must contain at most 15 character(s)
+Error: core.framework.hardware.cartridge_adapter Invalid input
 Error: Cores/AuthorName.AnotherCoreName/core.json invalid: 
 
 https://www.analogue.co/developer/docs/core-definition-files/core-json
@@ -81,6 +81,8 @@ Error: Specified platform nonsense_9 is missing, Platforms/nonsense_9.json shoul
 Recommendation: nonsense_9 is missing an image 
  https://www.analogue.co/developer/docs/platform-metadata#platform-image
 Exit code 28
+Recommendation: it's easier for users to install what they want when each zip contains 1 core
+Exit code 16
 "
 `)
 })
