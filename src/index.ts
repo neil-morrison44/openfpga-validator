@@ -17,7 +17,7 @@ export const runCLI = () => {
   program
     .name("openfpga-validator")
     .description("Script which validates OpenFPGA core zips")
-    .version("1.0.0")
+    .version(require("../package.json").version)
 
   program
     .command("check")
