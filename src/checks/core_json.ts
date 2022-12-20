@@ -51,7 +51,8 @@ export const checkAllMentionedFilesExist: CheckFn = async (zip, reporter) => {
         json.core.framework.chip32_vm
       )
 
-      if (!fileExistsInZip(zip, chip32vmPath)) {
+      const exists = fileExistsInZip(zip, chip32vmPath)
+      if (!exists) {
         reporter.error(
           `missing ${chip32vmPath} file`,
           "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#framework"
@@ -59,16 +60,16 @@ export const checkAllMentionedFilesExist: CheckFn = async (zip, reporter) => {
       }
     }
 
-    json.core.cores.forEach(({ filename }) => {
-      const coreFileName = coreFile.replace("core.json", filename)
-
-      if (!fileExistsInZip(zip, coreFileName)) {
+    for (const core of json.core.cores) {
+      const coreFileName = coreFile.replace("core.json", core.filename)
+      const exists = await fileExistsInZip(zip, coreFileName)
+      if (!exists) {
         reporter.error(
           `missing ${coreFileName} file`,
           "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#cores"
         )
       }
-    })
+    }
   }
 }
 
