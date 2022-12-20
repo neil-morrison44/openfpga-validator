@@ -67,7 +67,7 @@ export const processZip = async (
 
   await checkInputsAgainstSchema(zip, reporter)
 
-  zip.close()
+  await zip.close()
 
   let exitCode = reporter.errorCount
   if (options.failOnWarnings || options.failOnRecommendations)

@@ -56,7 +56,7 @@ export const checkAllMentionedFilesExist: CheckFn = async (zip, reporter) => {
         json.core.framework.chip32_vm
       )
 
-      const exists = fileExistsInZip(zip, chip32vmPath)
+      const exists = await fileExistsInZip(zip, chip32vmPath)
       if (!exists) {
         reporter.error(
           `missing ${chip32vmPath} file`,
