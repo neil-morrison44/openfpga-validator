@@ -15,6 +15,10 @@ test("bad.zip", async () => {
 "Error: Unparsable JSON file: this_isnt.json SyntaxError: Unexpected token h in JSON at position 1
 Error: Core folder Cores/AuthorName.coreName should be Cores/SomeoneElse.very very very very very long short name to match 
 https://www.analogue.co/developer/docs/core-definition-files#folder-naming-convention
+Error: Core folder Cores/AuthorName.AnotherCoreName should be Cores/undefined.undefined to match 
+https://www.analogue.co/developer/docs/core-definition-files#folder-naming-convention
+Error: missing Cores/AuthorName.coreName/snes_main_too_long_a_file_name_too_long.rev file 
+https://www.analogue.co/developer/docs/core-definition-files/core-json#cores
 Error: Cores/AuthorName.coreName/core.json invalid: 
 
 https://www.analogue.co/developer/docs/core-definition-files/core-json
@@ -31,7 +35,14 @@ Error: core.framework.chip32_vm String must contain at most 15 character(s)
 Error: core.framework.hardware.cartridge_adapter Invalid input
 Error: core.cores.0.name String must contain at most 15 character(s)
 Error: core.cores.0.filename String must contain at most 15 character(s)
+Error: Cores/AuthorName.AnotherCoreName/core.json invalid: 
+
+https://www.analogue.co/developer/docs/core-definition-files/core-json
+
+Error: core Required
 Recommendation: SemVer versioning is highly encouraged - \`not-semver-and-also-far-far-too-long\` in Cores/AuthorName.coreName/core.json 
+https://www.analogue.co/developer/docs/core-definition-files/core-json#metadata
+Recommendation: SemVer versioning is highly encouraged - \`undefined\` in Cores/AuthorName.AnotherCoreName/core.json 
 https://www.analogue.co/developer/docs/core-definition-files/core-json#metadata
 Error: Specified platform nonsense_1 is missing, Platforms/nonsense_1.json should exist 
  https://www.analogue.co/developer/docs/platform-metadata#platform.json
@@ -69,7 +80,7 @@ Error: Specified platform nonsense_9 is missing, Platforms/nonsense_9.json shoul
  https://www.analogue.co/developer/docs/platform-metadata#platform.json
 Recommendation: nonsense_9 is missing an image 
  https://www.analogue.co/developer/docs/platform-metadata#platform-image
-Exit code 24
+Exit code 28
 "
 `)
 })
