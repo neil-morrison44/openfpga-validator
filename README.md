@@ -17,7 +17,7 @@ It'll return the errors, warnings, & recommendations
 Can check for more options with
 
 ```bash
-npx openfpga-validator check --help
+npx openfpga-validator@lastest check --help
 ```
 
 ## Adding checks
