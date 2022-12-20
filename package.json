@@ -1,7 +1,7 @@
 {
   "name": "openfpga-validator",
   "private": false,
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Script which validates OpenFPGA core zips",
   "scripts": {
     "test": "npm run create-zips && jest",

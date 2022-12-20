@@ -9,7 +9,6 @@ export const checkCoreFolderName: CheckFn = async (zip, reporter) => {
 
   for (const coreFile of coreFiles) {
     const json = await getJSONFromZip<CoreJSON>(zip, coreFile)
-
     const { success } = await coreJsonSchema.safeParseAsync(json)
     if (!success) return
 
@@ -49,17 +48,15 @@ export const checkAllMentionedFilesExist: CheckFn = async (zip, reporter) => {
 
   for (const coreFile of coreFiles) {
     const json = await getJSONFromZip<CoreJSON>(zip, coreFile)
-
     const { success } = await coreJsonSchema.safeParseAsync(json)
     if (!success) return
-
     if (json.core.framework.chip32_vm) {
       const chip32vmPath = coreFile.replace(
         "core.json",
         json.core.framework.chip32_vm
       )
 
-      const exists = fileExistsInZip(zip, chip32vmPath)
+      const exists = await fileExistsInZip(zip, chip32vmPath)
       if (!exists) {
         reporter.error(
           `missing ${chip32vmPath} file`,
@@ -68,7 +65,7 @@ export const checkAllMentionedFilesExist: CheckFn = async (zip, reporter) => {
       }
     }
 
-    for (const core of json.core.cores) {
+    for (const core of json.core?.cores || []) {
       const coreFileName = coreFile.replace("core.json", core.filename)
       const exists = await fileExistsInZip(zip, coreFileName)
       if (!exists) {
@@ -87,13 +84,12 @@ export const checkForSemver: CheckFn = async (zip, reporter) => {
 
   for (const coreFile of coreFiles) {
     const json = await getJSONFromZip<CoreJSON>(zip, coreFile)
-
     const { success } = await coreJsonSchema.safeParseAsync(json)
     if (!success) return
 
     if (!semverRegex.test(json.core.metadata.version)) {
       reporter.recommend(
-        `SemVer versioning is highly encouraged - \`${json.core.metadata.version}\` in ${coreFile}`,
+        `SemVer versioning is highly encouraged - \`${json.core?.metadata?.version}\` in ${coreFile}`,
         "\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json#metadata"
       )
     }
@@ -122,7 +118,6 @@ export const checkAllSpecifiedPlatformsExist: CheckFn = async (
 
   for (const coreFile of coreFiles) {
     const json = await getJSONFromZip<CoreJSON>(zip, coreFile)
-
     const { success } = await coreJsonSchema.safeParseAsync(json)
     if (!success) return
 
