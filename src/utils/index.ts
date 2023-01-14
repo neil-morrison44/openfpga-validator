@@ -1,12 +1,17 @@
 import { StreamZipAsync } from "node-stream-zip"
 
-export const getJSONFromZip = async <T = any>(
+export const getJSONFromZip = async <T = {}>(
   zip: StreamZipAsync,
   filePath: string
-): Promise<T> => {
+): Promise<T | null> => {
   const data = await zip.entryData(filePath)
   const string = data.toString("utf-8")
-  return JSON.parse(string)
+  try {
+    const parsed = JSON.parse(string)
+    return parsed
+  } catch (e) {
+    return null
+  }
 }
 
 export const fileExistsInZip = async (

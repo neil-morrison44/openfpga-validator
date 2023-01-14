@@ -1,0 +1,29 @@
+{
+  "instance": {
+    "magic": "APF_VER_1",
+    "core_select": {
+      "id": -123
+    },
+    "variant_select": {
+      "id": 777,
+      "select": "ok"
+    },
+    "data_path": "basefolder1/",
+    "data_slots": [
+      {
+        "id": 1,
+        "filename": "samplefolder/sample.bin"
+      },
+      {
+        "id": "something_not_parsable",
+        "filename": "samplefolder/sample.wav"
+      }
+    ],
+    "memory_writes": [
+      {
+        "address": "0x00000004",
+        "data": "0x12345678"
+      }
+    ]
+  }
+}

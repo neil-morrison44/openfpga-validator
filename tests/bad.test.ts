@@ -35,7 +35,15 @@ https://www.analogue.co/developer/docs/core-definition-files/core-json
 
 Error: core Required
 Recommendation: it's easier for users to install what they want when each zip contains 1 core
-Exit code 16
+Error: Assets/plat/instance.json invalid: 
+
+https://www.analogue.co/developer/docs/core-definition-files/core-json
+
+Error: instance.core_select.select Required
+Error: instance.variant_select.select Expected boolean, received string
+Error: instance.core_select.id Number must be greater than or equal to 0
+Error: instance.data_slots.1.id Invalid input
+Exit code 21
 "
 `)
 })

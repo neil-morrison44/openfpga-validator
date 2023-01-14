@@ -13,6 +13,7 @@ export const checkInputsAgainstSchema: CheckFn = async (zip, reporter) => {
 
   for (const inputFile of files) {
     const json = await getJSONFromZip(zip, inputFile)
+    if (!json) continue
     const result = await inputJsonSchema.safeParseAsync(json)
     if (!result.success) {
       reporter.error(
