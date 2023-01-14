@@ -11,7 +11,7 @@ export const checkInstanceJSONSchema: CheckFn = async (zip, reporter) => {
     if (!result.success) {
       reporter.error(
         `${instanceFile} invalid:`,
-        "\n\nhttps://www.analogue.co/developer/docs/core-definition-files/core-json\n"
+        "\n\nhttps://www.analogue.co/developer/docs/core-definition-files/instance-json\n"
       )
       result.error.issues.forEach((issue) => {
         reporter.error(`${issue.path.join(".")}`, issue.message)
