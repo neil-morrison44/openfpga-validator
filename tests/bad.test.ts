@@ -13,6 +13,11 @@ test("bad.zip", async () => {
 
   expect(outputData).toMatchInlineSnapshot(`
 "Error: Unparsable JSON file: this_isnt.json SyntaxError: Unexpected token h in JSON at position 1
+Error: Cores/AuthorName.AnotherCoreName/core.json invalid: 
+
+https://www.analogue.co/developer/docs/core-definition-files/core-json
+
+Error: core Required
 Error: Cores/AuthorName.coreName/core.json invalid: 
 
 https://www.analogue.co/developer/docs/core-definition-files/core-json
@@ -29,11 +34,6 @@ Error: core.framework.chip32_vm String must contain at most 15 character(s)
 Error: core.cores.0.name String must contain at most 15 character(s)
 Error: core.cores.0.filename String must contain at most 15 character(s)
 Error: core.framework.hardware.cartridge_adapter Invalid input
-Error: Cores/AuthorName.AnotherCoreName/core.json invalid: 
-
-https://www.analogue.co/developer/docs/core-definition-files/core-json
-
-Error: core Required
 Recommendation: it's easier for users to install what they want when each zip contains 1 core
 Error: Assets/plat/instance.json invalid: 
 

@@ -33,7 +33,9 @@ export const dirExistsInZip = async (zip: StreamZipAsync, dirPath: string) => {
 
 export const findMatchingFiles = async (zip: StreamZipAsync, regex: RegExp) => {
   const entries = await zip.entries()
-  return Object.values(entries)
+  const files = Object.values(entries)
     .filter(({ name, isDirectory }) => regex.test(name) && !isDirectory)
     .map(({ name }) => name)
+  files.sort((a, b) => a.localeCompare(b))
+  return files
 }
