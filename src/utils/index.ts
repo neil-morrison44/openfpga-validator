@@ -1,12 +1,17 @@
 import { StreamZipAsync } from "node-stream-zip"
 
-export const getJSONFromZip = async <T = any>(
+export const getJSONFromZip = async <T = {}>(
   zip: StreamZipAsync,
   filePath: string
-): Promise<T> => {
+): Promise<T | null> => {
   const data = await zip.entryData(filePath)
   const string = data.toString("utf-8")
-  return JSON.parse(string)
+  try {
+    const parsed = JSON.parse(string)
+    return parsed
+  } catch (e) {
+    return null
+  }
 }
 
 export const fileExistsInZip = async (
@@ -28,7 +33,9 @@ export const dirExistsInZip = async (zip: StreamZipAsync, dirPath: string) => {
 
 export const findMatchingFiles = async (zip: StreamZipAsync, regex: RegExp) => {
   const entries = await zip.entries()
-  return Object.values(entries)
+  const files = Object.values(entries)
     .filter(({ name, isDirectory }) => regex.test(name) && !isDirectory)
     .map(({ name }) => name)
+  files.sort((a, b) => a.localeCompare(b))
+  return files
 }

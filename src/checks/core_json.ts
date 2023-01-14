@@ -9,6 +9,7 @@ export const checkCoreFolderName: CheckFn = async (zip, reporter) => {
 
   for (const coreFile of coreFiles) {
     const json = await getJSONFromZip<CoreJSON>(zip, coreFile)
+    if (!json) continue
     const { success } = await coreJsonSchema.safeParseAsync(json)
     if (!success) return
 
@@ -48,8 +49,9 @@ export const checkAllMentionedFilesExist: CheckFn = async (zip, reporter) => {
 
   for (const coreFile of coreFiles) {
     const json = await getJSONFromZip<CoreJSON>(zip, coreFile)
+    if (!json) continue
     const { success } = await coreJsonSchema.safeParseAsync(json)
-    if (!success) return
+    if (!success) continue
     if (json.core.framework.chip32_vm) {
       const chip32vmPath = coreFile.replace(
         "core.json",
@@ -84,8 +86,9 @@ export const checkForSemver: CheckFn = async (zip, reporter) => {
 
   for (const coreFile of coreFiles) {
     const json = await getJSONFromZip<CoreJSON>(zip, coreFile)
+    if (!json) continue
     const { success } = await coreJsonSchema.safeParseAsync(json)
-    if (!success) return
+    if (!success) continue
 
     if (!semverRegex.test(json.core.metadata.version)) {
       reporter.recommend(
@@ -118,8 +121,9 @@ export const checkAllSpecifiedPlatformsExist: CheckFn = async (
 
   for (const coreFile of coreFiles) {
     const json = await getJSONFromZip<CoreJSON>(zip, coreFile)
+    if (!json) continue
     const { success } = await coreJsonSchema.safeParseAsync(json)
-    if (!success) return
+    if (!success) continue
 
     const platformIds = json.core.metadata.platform_ids
 

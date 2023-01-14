@@ -12,6 +12,7 @@ import {
   countCoresInZip,
 } from "./checks/core_json"
 import { checkInputsAgainstSchema } from "./checks/input_json"
+import { checkInstanceJSONSchema } from "./checks/instance_jsons"
 
 export const runCLI = () => {
   const program = new Command()
@@ -66,6 +67,10 @@ export const processZip = async (
   // input
 
   await checkInputsAgainstSchema(zip, reporter)
+
+  // instance JSONs
+
+  await checkInstanceJSONSchema(zip, reporter)
 
   await zip.close()
 
