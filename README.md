@@ -7,7 +7,7 @@ Script which validates OpenFPGA core zips
 To run, do:
 
 ```bash
-npx openfpga-validator check <path_to_zip>
+npx openfpga-validator@latest check <path_to_zip>
 ```
 
 (you'll need node installed but after that it'll be a 1 line thing)
