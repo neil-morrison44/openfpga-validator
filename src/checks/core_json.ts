@@ -152,4 +152,7 @@ export const checkAllSpecifiedPlatformsExist: CheckFn = async (
 }
 
 const coresList = async (zip: StreamZipAsync) =>
-  findMatchingFiles(zip, /Cores\/[a-zA-Z0-9_.-]*\.[a-zA-Z0-9_.-]*\/core.json/g)
+  findMatchingFiles(
+    zip,
+    /Cores\/[a-zA-Z0-9_.-\s]*\.[a-zA-Z0-9_.-\s]*\/core.json/g
+  )
