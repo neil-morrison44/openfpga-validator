@@ -25,7 +25,7 @@ export const instanceJsonSchema = z.strictObject({
       .optional(),
     data_slots: z
       .array(
-        z.strictObject({
+        z.object({
           id: intOrHexSchema({ bits: 16, signed: false }),
           filename: z.string().max(255),
         })

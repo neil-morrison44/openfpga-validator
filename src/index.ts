@@ -5,7 +5,7 @@ import { checkForRootFiles } from "./checks/folders"
 import { Reporter } from "./report"
 import {
   checkAllMentionedFilesExist,
-  checkAllSpecifiedPlatformsExist,
+  checkSpecifiedPlatformsExist,
   checkCoreFolderName,
   checkForSemver,
   checkCoreJSONSchema,
@@ -62,7 +62,7 @@ export const processZip = async (
   await checkCoreJSONSchema(zip, reporter)
   await countCoresInZip(zip, reporter)
   await checkForSemver(zip, reporter)
-  await checkAllSpecifiedPlatformsExist(zip, reporter)
+  await checkSpecifiedPlatformsExist(zip, reporter)
 
   // input
 
