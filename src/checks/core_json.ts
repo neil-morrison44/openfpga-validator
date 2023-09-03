@@ -113,30 +113,44 @@ export const countCoresInZip: CheckFn = async (zip, reporter) => {
   }
 }
 
-export const checkAllSpecifiedPlatformsExist: CheckFn = async (
-  zip,
-  reporter
-) => {
+export const checkSpecifiedPlatformsExist: CheckFn = async (zip, reporter) => {
   const coreFiles = await coresList(zip)
 
   for (const coreFile of coreFiles) {
     const json = await getJSONFromZip<CoreJSON>(zip, coreFile)
     if (!json) continue
+
     const { success } = await coreJsonSchema.safeParseAsync(json)
     if (!success) continue
 
     const platformIds = json.core.metadata.platform_ids
+    const atLeastOnePlatformExists = (
+      await Promise.all(
+        platformIds.map(
+          async (p) => await fileExistsInZip(zip, `Platforms/${p}.json`)
+        )
+      )
+    ).some((e) => e)
+
+    if (!atLeastOnePlatformExists) {
+      reporter.error(
+        `Core ${coreFile} should specify at least 1 platform with a matching platform.json file`,
+        "\n https://www.analogue.co/developer/docs/platform-metadata#platform.json:~:text=All%20cores%20that%20specify%20a%20platform%20but%20no%20matching%20file%20is%20found%20for%20that%20platform%20will%20not%20display%20any%20additional%20information%20about%20the%20platform%20nor%20be%20able%20to%20access%20future%20features%20in%20Analogue%20OS."
+      )
+    }
 
     for (const platformId of platformIds) {
       const platformPath = `Platforms/${platformId}.json`
       const platformExists = await fileExistsInZip(zip, platformPath)
 
-      if (!platformExists) {
-        reporter.error(
+      if (!platformExists && !atLeastOnePlatformExists) {
+        reporter.recommend(
           `Specified platform ${platformId} is missing, ${platformPath} should exist`,
           "\n https://www.analogue.co/developer/docs/platform-metadata#platform.json"
         )
       }
+
+      if (!platformExists) continue
 
       const platformImagePath = `Platforms/_images/${platformId}.bin`
       const platformImageExists = await fileExistsInZip(zip, platformImagePath)
